@@ -1,10 +1,8 @@
 {
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "backend/server.js"
-    }
-  ]
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "PORT": "@port"
+  }
 }
