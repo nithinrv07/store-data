@@ -3,39 +3,55 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
-      - '-f'
-      - 'backend/Dockerfile'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
       - '.'
-    id: 'build-image'
+    id: 'build'
 
   # Push the image to Google Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
-    id: 'push-image'
+    id: 'push'
 
   # Deploy to Cloud Run
-  - name: 'gcr.io/cloud-builders/gke-deploy'
+  - name: 'gcr.io/cloud-builders/run'
     args:
-      - 'run'
-      - '--filename=.'
-      - '--image=gcr.io/$PROJECT_ID/$_SERVICE_NAME'
-      - '--location=europe-west1'
-      - '--output=/workspace/output'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
+      - '--region'
+      - '$_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'MONGODB_URI=$_MONGODB_URI,NODE_ENV=production'
+      - '--port'
+      - '8080'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+    id: 'deploy'
     env:
-      - 'CLOUDSDK_RUN_REGION=europe-west1'
-      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_RUN_REGION=$_REGION'
 
 images:
-  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:latest'
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA'
 
 substitutions:
   _SERVICE_NAME: 'storedatabase'
   _REGION: 'europe-west1'
+  _MONGODB_URI: 'mongodb+srv://nithin:nithin19@cluster0.c95nbs3.mongodb.net/?appName=Cluster0'
 
 options:
   machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
   substitution_option: 'ALLOW_LOOSE'
+
