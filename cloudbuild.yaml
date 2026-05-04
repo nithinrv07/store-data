@@ -1,0 +1,41 @@
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'backend/Dockerfile'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+      - '.'
+    id: 'build-image'
+
+  # Push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+    id: 'push-image'
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - 'run'
+      - '--filename=.'
+      - '--image=gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+      - '--location=europe-west1'
+      - '--output=/workspace/output'
+    env:
+      - 'CLOUDSDK_RUN_REGION=europe-west1'
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+
+images:
+  - 'gcr.io/$PROJECT_ID/$_SERVICE_NAME'
+
+substitutions:
+  _SERVICE_NAME: 'storedatabase'
+  _REGION: 'europe-west1'
+
+options:
+  machineType: 'N1_HIGHCPU_8'
+  substitution_option: 'ALLOW_LOOSE'
