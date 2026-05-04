@@ -1,48 +1,25 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/storedatabase:latest'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/storedatabase:$COMMIT_SHA'
-      - '-f'
-      - 'Dockerfile'
-      - '.'
-    dir: '.'
-
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/storedatabase', '.']
+  
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/storedatabase:latest'
-
+    args: ['push', 'gcr.io/$PROJECT_ID/storedatabase']
+  
   - name: 'gcr.io/cloud-builders/run'
     args:
       - 'deploy'
       - 'storedatabase'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/storedatabase:latest'
-      - '--region'
-      - 'europe-west1'
-      - '--platform'
-      - 'managed'
+      - '--image=gcr.io/$PROJECT_ID/storedatabase'
+      - '--region=europe-west1'
+      - '--platform=managed'
       - '--allow-unauthenticated'
-      - '--set-env-vars'
-      - 'MONGODB_URI=mongodb+srv://nithin:nithin19@cluster0.c95nbs3.mongodb.net/?appName=Cluster0,NODE_ENV=production,PORT=8080'
-      - '--port'
-      - '8080'
-      - '--memory'
-      - '512Mi'
-      - '--cpu'
-      - '1'
-    env:
-      - 'CLOUDSDK_RUN_REGION=europe-west1'
-
-images:
-  - 'gcr.io/$PROJECT_ID/storedatabase:latest'
+      - '--port=8080'
+      - '--memory=512Mi'
+      - '--set-env-vars=MONGODB_URI=mongodb+srv://nithin:nithin19@cluster0.c95nbs3.mongodb.net/?appName=Cluster0,NODE_ENV=production'
 
 options:
   machineType: 'N1_HIGHCPU_8'
-  logging: CLOUD_LOGGING_ONLY
+
+
 
 
