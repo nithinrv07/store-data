@@ -43,7 +43,7 @@ git push origin main
 ```
 
 ### Step 2: Set Environment Variables (in your cloud provider)
-- `MONGODB_URI`: mongodb+srv://nithin:nithin19@cluster0.c95nbs3.mongodb.net/?appName=Cluster0
+- `MONGODB_URI`: Set this in your cloud provider's environment variables (see .env.example)
 - `PORT`: 5000
 - `NODE_ENV`: production
 
