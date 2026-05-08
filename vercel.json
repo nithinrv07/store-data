@@ -1,14 +1,16 @@
 {
-  "buildCommand": "cd frontend && npm run build",
+  "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist",
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "PORT": "@port"
-  },
+  "framework": "vite",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "/api/[...slug].js"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }
