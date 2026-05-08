@@ -4,5 +4,11 @@
   "env": {
     "MONGODB_URI": "@mongodb_uri",
     "PORT": "@port"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
 }

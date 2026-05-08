@@ -7,6 +7,6 @@ RUN npm ci --only=production
 
 COPY backend/ ./
 
-EXPOSE 8080
+EXPOSE 5000
 
 CMD ["node", "server.js"]

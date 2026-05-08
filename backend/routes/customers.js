@@ -48,16 +48,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Update Customer
-router.put('/:id', async (req, res) => {
-    try {
-        const updatedCustomer = await Customer.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedCustomer);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
-
 // Delete Customer
 router.delete('/:id', async (req, res) => {
     try {

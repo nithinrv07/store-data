@@ -1,11 +1,15 @@
 require('dotenv').config();
-require('dns').setServers(['8.8.8.8', '8.8.4.4']);
+try {
+    require('dns').setServers(['8.8.8.8', '8.8.4.4']);
+} catch (e) {
+    console.warn('Could not set DNS servers:', e.message);
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());

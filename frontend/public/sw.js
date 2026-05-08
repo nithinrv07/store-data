@@ -2,11 +2,7 @@ const CACHE_NAME = 'jayalakshmi-v1';
 const ASSETS = [
   '/',
   '/index.html',
-  '/src/main.jsx',
-  '/src/App.jsx',
-  '/src/App.css',
-  '/src/index.css',
-  '/src/Reports.jsx',
+  '/manifest.json',
   '/favicon.svg'
 ];
 
