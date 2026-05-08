@@ -15,19 +15,43 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+let isConnected = false;
+
 // Database connection
 const connectDB = async () => {
     try {
-        const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/appliance_store';
+        const uri = process.env.MONGODB_URI;
+        if (!uri) {
+            console.error('MONGODB_URI is not defined in environment variables');
+            return;
+        }
         await mongoose.connect(uri);
+        isConnected = true;
         console.log('MongoDB connected successfully');
     } catch (error) {
         console.error('MongoDB connection error:', error);
-        process.exit(1);
     }
 };
 
 connectDB();
+
+// Health check route
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        database: isConnected ? 'connected' : 'disconnected',
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV
+    });
+});
+
+// Middleware to check DB connection
+app.use((req, res, next) => {
+    if (!isConnected && req.path.startsWith('/api')) {
+        return res.status(503).json({ error: 'Database not connected. Please check MONGODB_URI.' });
+    }
+    next();
+});
 
 const path = require('path');
 
@@ -39,11 +63,6 @@ const inventoryRoutes = require('./routes/inventory');
 app.use('/api/customers', customerRoutes);
 app.use('/api/appliances', applianceRoutes);
 app.use('/api/inventory', inventoryRoutes);
-
-// Health check route
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
