@@ -29,6 +29,8 @@ const connectDB = async () => {
 
 connectDB();
 
+const path = require('path');
+
 // Routes
 const customerRoutes = require('./routes/customers');
 const applianceRoutes = require('./routes/appliances');
@@ -37,9 +39,12 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/appliances', applianceRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
-// Basic route
-app.get('/', (req, res) => {
-    res.send("Jayalakshmi Computer's API is running");
+// Serve static files from the frontend build
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Catch-all route to serve the frontend for any other request
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
