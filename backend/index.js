@@ -1,9 +1,3 @@
-require('dotenv').config();
-try {
-    require('dns').setServers(['8.8.8.8', '8.8.4.4']);
-} catch (e) {
-    console.warn('Could not set DNS servers:', e.message);
-}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -18,8 +12,16 @@ app.use(express.json());
 let isConnected = false;
 let connectionError = 'Waiting for connection...';
 
-// Database connection
+// Global variable to cache the connection
+let cachedDb = null;
+
+// Database connection function
 const connectDB = async () => {
+    if (cachedDb && mongoose.connection.readyState === 1) {
+        isConnected = true;
+        return cachedDb;
+    }
+
     try {
         const uri = process.env.MONGODB_URI;
         if (!uri) {
@@ -27,16 +29,26 @@ const connectDB = async () => {
             console.error(connectionError);
             return;
         }
-        await mongoose.connect(uri);
+
+        console.log('Attempting to connect to MongoDB...');
+        const conn = await mongoose.connect(uri, {
+            serverSelectionTimeoutMS: 10000, // 10 seconds timeout
+            socketTimeoutMS: 45000,
+        });
+
+        cachedDb = conn;
         isConnected = true;
         connectionError = null;
         console.log('MongoDB connected successfully');
+        return conn;
     } catch (error) {
+        isConnected = false;
         connectionError = `MongoDB connection error: ${error.message}`;
         console.error(connectionError);
     }
 };
 
+// Initiate connection
 connectDB();
 
 // Health check route
