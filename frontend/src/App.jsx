@@ -45,9 +45,15 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/customers`);
       const data = await res.json();
-      setCustomers(data);
+      if (Array.isArray(data)) {
+        setCustomers(data);
+      } else {
+        console.error('Expected array for customers, got:', data);
+        setCustomers([]);
+      }
     } catch (err) {
       console.error('Error fetching customers:', err);
+      setCustomers([]);
     }
   };
 
@@ -55,10 +61,18 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/appliances`);
       const data = await res.json();
-      setAllSales(data);
-      setTotalSales(data.length);
+      if (Array.isArray(data)) {
+        setAllSales(data);
+        setTotalSales(data.length);
+      } else {
+        console.error('Expected array for total sales, got:', data);
+        setAllSales([]);
+        setTotalSales(0);
+      }
     } catch (err) {
       console.error('Error fetching total sales:', err);
+      setAllSales([]);
+      setTotalSales(0);
     }
   };
 
@@ -66,9 +80,15 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/inventory`);
       const data = await res.json();
-      setInventory(data);
+      if (Array.isArray(data)) {
+        setInventory(data);
+      } else {
+        console.error('Expected array for inventory, got:', data);
+        setInventory([]);
+      }
     } catch (err) {
       console.error('Error fetching inventory:', err);
+      setInventory([]);
     }
   };
 
@@ -76,9 +96,15 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/appliances/customer/${id}`);
       const data = await res.json();
-      setCustomerSales(data);
+      if (Array.isArray(data)) {
+        setCustomerSales(data);
+      } else {
+        console.error('Expected array for customer appliances, got:', data);
+        setCustomerSales([]);
+      }
     } catch (err) {
       console.error('Error fetching appliances:', err);
+      setCustomerSales([]);
     }
   };
 
