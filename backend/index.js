@@ -16,20 +16,24 @@ app.use(cors());
 app.use(express.json());
 
 let isConnected = false;
+let connectionError = 'Waiting for connection...';
 
 // Database connection
 const connectDB = async () => {
     try {
         const uri = process.env.MONGODB_URI;
         if (!uri) {
-            console.error('MONGODB_URI is not defined in environment variables');
+            connectionError = 'MONGODB_URI is not defined in environment variables.';
+            console.error(connectionError);
             return;
         }
         await mongoose.connect(uri);
         isConnected = true;
+        connectionError = null;
         console.log('MongoDB connected successfully');
     } catch (error) {
-        console.error('MongoDB connection error:', error);
+        connectionError = `MongoDB connection error: ${error.message}`;
+        console.error(connectionError);
     }
 };
 
@@ -40,6 +44,7 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'ok', 
         database: isConnected ? 'connected' : 'disconnected',
+        error: connectionError,
         timestamp: new Date().toISOString(),
         env: process.env.NODE_ENV
     });
@@ -48,7 +53,11 @@ app.get('/health', (req, res) => {
 // Middleware to check DB connection
 app.use((req, res, next) => {
     if (!isConnected && req.path.startsWith('/api')) {
-        return res.status(503).json({ error: 'Database not connected. Please check MONGODB_URI.' });
+        return res.status(503).json({ 
+            error: 'Database not connected.',
+            details: connectionError,
+            help: 'Please check your MONGODB_URI in Vercel Dashboard.'
+        });
     }
     next();
 });
