@@ -16,8 +16,8 @@ let connectionError = 'Waiting for connection...';
 // Database connection & Sync
 const connectDB = async () => {
     try {
-        if (!process.env.DATABASE_URL) {
-            connectionError = 'DATABASE_URL is not defined in environment variables.';
+        if (!sequelize) {
+            connectionError = 'DATABASE_URL is not defined or database failed to initialize.';
             console.error(connectionError);
             return;
         }
