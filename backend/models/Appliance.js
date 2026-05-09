@@ -1,49 +1,49 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db');
+const Customer = require('./Customer');
 
-const applianceSchema = new mongoose.Schema({
+const Appliance = sequelize.define('Appliance', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     brand: {
-        type: String,
-        required: true,
-        trim: true,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     model_number: {
-        type: String,
-        required: true,
-        trim: true,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     serial_number: {
-        type: String,
-        required: true,
-        trim: true,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     category: {
-        type: String,
-        required: true,
-        default: 'General',
+        type: DataTypes.STRING,
+        defaultValue: 'Laptops'
     },
     price: {
-        type: Number,
-        required: true,
-        default: 0,
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0
     },
     cost: {
-        type: Number,
-        required: true,
-        default: 0,
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0
     },
     purchase_date: {
-        type: Date,
-        required: true,
+        type: DataTypes.DATE,
+        allowNull: false
     },
     warranty_expiration: {
-        type: Date,
-        required: true,
-    },
-    customer_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer',
-        required: true,
+        type: DataTypes.DATE,
+        allowNull: false
     }
-}, { timestamps: true });
+});
 
-module.exports = mongoose.model('Appliance', applianceSchema);
+// Relationships
+Appliance.belongsTo(Customer, { foreignKey: 'customer_id' });
+Customer.hasMany(Appliance, { foreignKey: 'customer_id' });
+
+module.exports = Appliance;

@@ -5,8 +5,7 @@ const Customer = require('../models/Customer');
 // Create Customer
 router.post('/', async (req, res) => {
     try {
-        const customer = new Customer(req.body);
-        const savedCustomer = await customer.save();
+        const savedCustomer = await Customer.create(req.body);
         res.status(201).json(savedCustomer);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -16,7 +15,7 @@ router.post('/', async (req, res) => {
 // Get all Customers
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find().sort({ createdAt: -1 });
+        const customers = await Customer.findAll({ order: [['createdAt', 'DESC']] });
         res.json(customers);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -26,7 +25,7 @@ router.get('/', async (req, res) => {
 // Get single Customer
 router.get('/:id', async (req, res) => {
     try {
-        const customer = await Customer.findById(req.params.id);
+        const customer = await Customer.findByPk(req.params.id);
         if (!customer) return res.status(404).json({ message: 'Customer not found' });
         res.json(customer);
     } catch (error) {
@@ -37,12 +36,10 @@ router.get('/:id', async (req, res) => {
 // Update Customer
 router.put('/:id', async (req, res) => {
     try {
-        const updatedCustomer = await Customer.findByIdAndUpdate(
-            req.params.id, 
-            req.body,
-            { new: true }
-        );
-        res.json(updatedCustomer);
+        const customer = await Customer.findByPk(req.params.id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+        await customer.update(req.body);
+        res.json(customer);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -51,7 +48,9 @@ router.put('/:id', async (req, res) => {
 // Delete Customer
 router.delete('/:id', async (req, res) => {
     try {
-        await Customer.findByIdAndDelete(req.params.id);
+        const customer = await Customer.findByPk(req.params.id);
+        if (!customer) return res.status(404).json({ message: 'Customer not found' });
+        await customer.destroy();
         res.json({ message: 'Customer deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });

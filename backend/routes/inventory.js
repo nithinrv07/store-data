@@ -2,42 +2,45 @@ const express = require('express');
 const router = express.Router();
 const Inventory = require('../models/Inventory');
 
-// Get all Inventory items
-router.get('/', async (req, res) => {
-    try {
-        const inventory = await Inventory.find();
-        res.json(inventory);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// Create Inventory item
+// Create Inventory
 router.post('/', async (req, res) => {
     try {
-        const item = new Inventory(req.body);
-        const savedItem = await item.save();
+        const savedItem = await Inventory.create(req.body);
         res.status(201).json(savedItem);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-// Update Inventory item
+// Get all Inventory
+router.get('/', async (req, res) => {
+    try {
+        const items = await Inventory.findAll({ order: [['createdAt', 'DESC']] });
+        res.json(items);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Update Inventory
 router.put('/:id', async (req, res) => {
     try {
-        const updatedItem = await Inventory.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(updatedItem);
+        const item = await Inventory.findByPk(req.params.id);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+        await item.update(req.body);
+        res.json(item);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-// Delete Inventory item
+// Delete Inventory
 router.delete('/:id', async (req, res) => {
     try {
-        await Inventory.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Item deleted from inventory' });
+        const item = await Inventory.findByPk(req.params.id);
+        if (!item) return res.status(404).json({ message: 'Item not found' });
+        await item.destroy();
+        res.json({ message: 'Item deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
