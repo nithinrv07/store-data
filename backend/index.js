@@ -34,6 +34,7 @@ const connectDB = async () => {
         const conn = await mongoose.connect(uri, {
             serverSelectionTimeoutMS: 10000, // 10 seconds timeout
             socketTimeoutMS: 45000,
+            family: 4, // Force IPv4
         });
 
         cachedDb = conn;
