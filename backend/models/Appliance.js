@@ -1,5 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
+
+if (!sequelize) {
+    console.error('Appliance model could not be initialized: Sequelize is null');
+    module.exports = {};
+    return;
+}
+
 const Customer = require('./Customer');
 
 const Appliance = sequelize.define('Appliance', {

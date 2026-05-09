@@ -1,6 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 
+if (!sequelize) {
+    console.error('Inventory model could not be initialized: Sequelize is null');
+    module.exports = {};
+    return;
+}
+
 const Inventory = sequelize.define('Inventory', {
     id: {
         type: DataTypes.INTEGER,
