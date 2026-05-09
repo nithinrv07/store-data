@@ -31,8 +31,9 @@ const connectDB = async () => {
         console.log('Attempting to connect to MySQL...');
         await sequelize.authenticate();
         
-        // Sync models to database (create tables)
-        await sequelize.sync({ alter: true });
+        // Sync models safely (only create if missing, do not alter)
+        // Altering tables on every cold start in a Serverless environment causes Lambda timeouts and crashes.
+        await sequelize.sync();
         
         isConnected = true;
         connectionError = null;
@@ -87,8 +88,8 @@ app.use((err, req, res, next) => {
     });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+// Start the server if executed directly (e.g., via 'npm start' in Vercel experimentalServices)
+if (require.main === module) {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
