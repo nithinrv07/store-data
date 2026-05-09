@@ -10,6 +10,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+    console.log(`[DEBUG] Incoming Request: ${req.method} ${req.url}`);
+    console.log(`[DEBUG] Headers:`, req.headers);
+    next();
+});
+
 let isConnected = false;
 let connectionError = 'Waiting for connection...';
 
