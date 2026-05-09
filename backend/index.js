@@ -71,8 +71,18 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/appliances', applianceRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('GLOBAL ERROR:', err);
+    res.status(500).json({
+        error: 'A server error occurred',
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
 // For local development
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
