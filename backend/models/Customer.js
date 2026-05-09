@@ -3,7 +3,13 @@ const sequelize = require('../db');
 
 if (!sequelize) {
     console.error('Customer model could not be initialized: Sequelize is null');
-    module.exports = {}; // Export empty object to prevent crashes
+    module.exports = {
+        create: () => Promise.reject(new Error('DB not connected')),
+        findAll: () => Promise.resolve([]),
+        findByPk: () => Promise.resolve(null),
+        update: () => Promise.reject(new Error('DB not connected')),
+        destroy: () => Promise.reject(new Error('DB not connected'))
+    };
     return;
 }
 
