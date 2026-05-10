@@ -17,11 +17,7 @@ COPY . .
 # Build the application (runs root build script which builds frontend and moves to dist)
 RUN npm run build
 
-# Expose port 5000
-EXPOSE 5000
-
 # Set environment variables
-ENV PORT=5000
 ENV NODE_ENV=production
 
 # Start the application

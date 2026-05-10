@@ -107,10 +107,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start the server if executed directly (e.g., via 'npm start' in Vercel experimentalServices)
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
-}
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 
 module.exports = app;
