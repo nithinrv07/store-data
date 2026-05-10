@@ -37,7 +37,7 @@ function App() {
 
   useEffect(() => {
     if (selectedCustomer) {
-      fetchAppliances(selectedCustomer._id);
+      fetchAppliances(selectedCustomer.id);
     }
   }, [selectedCustomer]);
 
@@ -111,7 +111,7 @@ function App() {
   const handleCustomerSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = editingCustomer ? `${API_BASE}/customers/${editingCustomer._id}` : `${API_BASE}/customers`;
+      const url = editingCustomer ? `${API_BASE}/customers/${editingCustomer.id}` : `${API_BASE}/customers`;
       const method = editingCustomer ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
@@ -132,7 +132,7 @@ function App() {
   const handleInventorySubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = editingInventory ? `${API_BASE}/inventory/${editingInventory._id}` : `${API_BASE}/inventory`;
+      const url = editingInventory ? `${API_BASE}/inventory/${editingInventory.id}` : `${API_BASE}/inventory`;
       const method = editingInventory ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
@@ -179,13 +179,13 @@ function App() {
     e.preventDefault();
     try {
       if (editingAppliance) {
-        const res = await fetch(`${API_BASE}/appliances/${editingAppliance._id}`, {
+        const res = await fetch(`${API_BASE}/appliances/${editingAppliance.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(multiAppliances[0])
         });
         if (res.ok) {
-          fetchAppliances(selectedCustomer._id);
+          fetchAppliances(selectedCustomer.id);
           fetchTotalSales();
           setIsApplianceModalOpen(false);
           setEditingAppliance(null);
@@ -196,11 +196,11 @@ function App() {
           fetch(`${API_BASE}/appliances`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...item, customer_id: selectedCustomer._id })
+            body: JSON.stringify({ ...item, customerid: selectedCustomer.id })
           })
         );
         await Promise.all(promises);
-        fetchAppliances(selectedCustomer._id);
+        fetchAppliances(selectedCustomer.id);
         fetchTotalSales();
         setIsApplianceModalOpen(false);
       }
@@ -215,7 +215,7 @@ function App() {
       const res = await fetch(`${API_BASE}/customers/${id}`, { method: 'DELETE' });
       if (res.ok) {
         fetchCustomers();
-        if (selectedCustomer?._id === id) setSelectedCustomer(null);
+        if (selectedCustomer?.id === id) setSelectedCustomer(null);
       }
     } catch (err) {
       console.error('Error deleting customer:', err);
@@ -226,7 +226,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/appliances/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        fetchAppliances(selectedCustomer._id);
+        fetchAppliances(selectedCustomer.id);
         fetchTotalSales();
       }
     } catch (err) {
@@ -311,8 +311,8 @@ function App() {
                       </div>
                       {groupedCustomers[month].map(customer => (
                         <div 
-                          key={customer._id} 
-                          className={`customer-item ${selectedCustomer?._id === customer._id ? 'selected' : ''}`}
+                          key={customer.id} 
+                          className={`customer-item ${selectedCustomer?.id === customer.id ? 'selected' : ''}`}
                           onClick={() => setSelectedCustomer(customer)}
                         >
                           <div className="customer-info">
@@ -323,7 +323,7 @@ function App() {
                             <button className="btn-outline" onClick={(e) => { e.stopPropagation(); setEditingCustomer(customer); setCustomerForm(customer); setIsCustomerModalOpen(true); }} style={{ padding: '0.4rem', border: 'none', display: 'flex', alignItems: 'center', color: '#2563eb' }}>
                               <Pencil size={18} />
                             </button>
-                            <button className="btn-outline" onClick={(e) => { e.stopPropagation(); deleteCustomer(customer._id); }} style={{ padding: '0.4rem', color: '#ef4444', border: 'none', display: 'flex', alignItems: 'center' }}>
+                            <button className="btn-outline" onClick={(e) => { e.stopPropagation(); deleteCustomer(customer.id); }} style={{ padding: '0.4rem', color: '#ef4444', border: 'none', display: 'flex', alignItems: 'center' }}>
                               <Trash2 size={18} />
                             </button>
                             <ChevronRight size={20} color="#64748b" />
@@ -361,14 +361,14 @@ function App() {
                     <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>Sales History</h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                       {customerSales.length > 0 ? customerSales.map(app => (
-                        <div key={app._id} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <div key={app.id} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <h4 style={{ fontSize: '0.95rem' }}>{app.brand} - {app.model_number}</h4>
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                               <button onClick={() => { setEditingAppliance(app); setMultiAppliances([app]); setIsApplianceModalOpen(true); }} style={{ color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer' }}>
                                 <Pencil size={14} />
                               </button>
-                              <button onClick={() => deleteAppliance(app._id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>
+                              <button onClick={() => deleteAppliance(app.id)} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }}>
                                 <Trash2 size={14} />
                               </button>
                             </div>
@@ -430,7 +430,7 @@ function App() {
                   </thead>
                   <tbody>
                     {inventory.map(item => (
-                      <tr key={item._id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <tr key={item.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
                         <td style={{ padding: '1rem' }}>
                           <div style={{ fontWeight: 600 }}>{item.brand}</div>
                           <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{item.model_number}</div>
@@ -456,7 +456,7 @@ function App() {
                             <button className="btn-outline" onClick={() => { setEditingInventory(item); setInventoryForm(item); setIsInventoryModalOpen(true); }} style={{ padding: '0.4rem', border: 'none', color: '#2563eb' }}>
                               <Pencil size={18} />
                             </button>
-                            <button className="btn-outline" onClick={() => deleteInventory(item._id)} style={{ padding: '0.4rem', color: '#ef4444', border: 'none' }}>
+                            <button className="btn-outline" onClick={() => deleteInventory(item.id)} style={{ padding: '0.4rem', color: '#ef4444', border: 'none' }}>
                               <Trash2 size={18} />
                             </button>
                           </div>

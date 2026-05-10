@@ -216,7 +216,7 @@ const Reports = ({ sales, inventory = [] }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {lowStockItems.length > 0 ? (
               lowStockItems.map(item => (
-                <div key={item._id} style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '10px', borderLeft: '4px solid #ef4444' }}>
+                <div key={item.id} style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '10px', borderLeft: '4px solid #ef4444' }}>
                   <h4 style={{ fontSize: '0.9rem', marginBottom: '0.25rem', color: '#fca5a5' }}>Low Stock: {item.brand}</h4>
                   <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{item.model_number} is running low ({item.quantity} left).</p>
                 </div>

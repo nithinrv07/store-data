@@ -1,15 +1,13 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// Use environment variable for production (e.g. Vercel)
 const dbUrl = process.env.DATABASE_URL;
-
-if (!dbUrl) {
-    console.error('CRITICAL: DATABASE_URL is missing!');
-}
 
 let sequelize = null;
 
 if (dbUrl) {
+    console.log('Connecting to remote MySQL database...');
     try {
         sequelize = new Sequelize(dbUrl, {
             dialect: 'mysql',
@@ -28,6 +26,18 @@ if (dbUrl) {
         });
     } catch (err) {
         console.error('CRITICAL: Failed to initialize Sequelize with the provided DATABASE_URL:', err.message);
+        sequelize = null;
+    }
+} else {
+    console.log('No DATABASE_URL provided. Falling back to local SQLite database.');
+    try {
+        sequelize = new Sequelize({
+            dialect: 'sqlite',
+            storage: './database.sqlite',
+            logging: false
+        });
+    } catch (err) {
+        console.error('CRITICAL: Failed to initialize local SQLite:', err.message);
         sequelize = null;
     }
 }
