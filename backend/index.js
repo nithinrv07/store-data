@@ -18,6 +18,7 @@ app.use((req, res, next) => {
 
 let isConnected = false;
 let connectionError = 'Waiting for connection...';
+let dbPromise = null;
 
 // Database connection & Sync
 const connectDB = async () => {
@@ -25,14 +26,13 @@ const connectDB = async () => {
         if (!sequelize) {
             connectionError = 'DATABASE_URL is not defined or database failed to initialize.';
             console.error(connectionError);
-            return;
+            throw new Error(connectionError);
         }
 
         console.log('Attempting to connect to MySQL...');
         await sequelize.authenticate();
         
-        // Sync models safely (only create if missing, do not alter)
-        // Altering tables on every cold start in a Serverless environment causes Lambda timeouts and crashes.
+        // Sync models safely
         await sequelize.sync();
         
         isConnected = true;
@@ -42,10 +42,9 @@ const connectDB = async () => {
         isConnected = false;
         connectionError = `MySQL connection error: ${error.message}`;
         console.error(connectionError);
+        throw error;
     }
 };
-
-connectDB();
 
 // Health check route
 app.get('/health', (req, res) => {
@@ -59,12 +58,21 @@ app.get('/health', (req, res) => {
 });
 
 // Middleware to check DB connection for API calls
-app.use((req, res, next) => {
-    if (!isConnected && req.path.startsWith('/api')) {
-        return res.status(503).json({ 
-            error: 'Database not connected.',
-            details: connectionError
-        });
+app.use(async (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        if (!isConnected) {
+            try {
+                if (!dbPromise) {
+                    dbPromise = connectDB();
+                }
+                await dbPromise;
+            } catch (err) {
+                return res.status(503).json({ 
+                    error: 'Database connection failed.',
+                    details: connectionError || err.message
+                });
+            }
+        }
     }
     next();
 });
