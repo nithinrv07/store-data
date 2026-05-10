@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, User, Smartphone, Home, Monitor, Trash2, ChevronRight, X, Pencil, PlusCircle } from 'lucide-react';
 import Reports from './Reports';
 
-const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? '/_/backend/api' : 'http://localhost:5000/api');
+const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 function App() {
   const [customers, setCustomers] = useState([]);
@@ -196,7 +196,7 @@ function App() {
           fetch(`${API_BASE}/appliances`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...item, customerid: selectedCustomer.id })
+            body: JSON.stringify({ ...item, customer_id: selectedCustomer.id })
           })
         );
         await Promise.all(promises);
