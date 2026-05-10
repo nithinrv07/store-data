@@ -92,7 +92,7 @@ const frontendDistPath = path.join(__dirname, '../dist');
 app.use(express.static(frontendDistPath));
 
 // Catch-all route to serve index.html for SPA frontend routing
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
