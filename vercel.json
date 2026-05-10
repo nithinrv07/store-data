@@ -14,10 +14,10 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/backend/index.js" },
-    { "source": "/assets/(.*)", "destination": "/frontend/assets/$1" },
+    { "source": "/api/:path*", "destination": "/backend/index.js" },
+    { "source": "/assets/:path*", "destination": "/frontend/assets/:path*" },
     { "source": "/favicon.svg", "destination": "/frontend/favicon.svg" },
     { "source": "/manifest.json", "destination": "/frontend/manifest.json" },
-    { "source": "/(.*)", "destination": "/frontend/index.html" }
+    { "source": "/:path*", "destination": "/frontend/index.html" }
   ]
 }
